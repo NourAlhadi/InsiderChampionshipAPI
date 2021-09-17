@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\LeagueHelper;
+use App\Models\League;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Resources\Match as MatchResource;
@@ -38,6 +39,14 @@ class LeagueController extends Controller {
     }
 
     public function resetLeague( $leagueId ) {
+        $league = League::find( $leagueId );
+        if ( !$league ) {
+            return response()->json([
+                'status' => 'fail',
+                'data' => 'invalid league id'
+            ]);
+        }
+
         return response()->json([
             'status' => 'ok',
             'data' => new LeagueResource( $this->leagueHelper->resetLeague( $leagueId ) )
@@ -46,6 +55,14 @@ class LeagueController extends Controller {
 
 
     public function getLeagueGames( $leagueId ) {
+        $league = League::find( $leagueId );
+        if ( !$league ) {
+            return response()->json([
+                'status' => 'fail',
+                'data' => 'invalid league id'
+            ]);
+        }
+
         return response()->json([
             'status' => 'ok',
             'data' => MatchResource::collection( $this->leagueHelper->getLeagueGames( $leagueId ) )
@@ -53,6 +70,21 @@ class LeagueController extends Controller {
     }
 
     public function getWeekGames( $leagueId, $week ) {
+        $league = League::find( $leagueId );
+        if ( !$league ) {
+            return response()->json([
+                'status' => 'fail',
+                'data' => 'invalid league id'
+            ]);
+        }
+
+        if ( intval($week) < 1 || intval($week) > 6 ) {
+            return response()->json([
+                'status' => 'fail',
+                'data' => 'invalid week'
+            ]);
+        }
+
         return response()->json([
             'status' => 'ok',
             'data' => MatchResource::collection( $this->leagueHelper->getWeekGames( $leagueId, $week ) )
@@ -60,6 +92,14 @@ class LeagueController extends Controller {
     }
 
     public function play ( $leagueId ) {
+        $league = League::find( $leagueId );
+        if ( !$league ) {
+            return response()->json([
+                'status' => 'fail',
+                'data' => 'invalid league id'
+            ]);
+        }
+
         $this->leagueHelper->playWeekGames( $leagueId );
         return response()->json([
             'status' => 'ok',
@@ -68,6 +108,14 @@ class LeagueController extends Controller {
     }
 
     public function playAll ( $leagueId ) {
+        $league = League::find( $leagueId );
+        if ( !$league ) {
+            return response()->json([
+                'status' => 'fail',
+                'data' => 'invalid league id'
+            ]);
+        }
+
         $this->leagueHelper->playAllGames( $leagueId );
         return response()->json([
             'status' => 'ok',
@@ -76,6 +124,14 @@ class LeagueController extends Controller {
     }
 
     public function standings( $leagueId ) {
+        $league = League::find( $leagueId );
+        if ( !$league ) {
+            return response()->json([
+                'status' => 'fail',
+                'data' => 'invalid league id'
+            ]);
+        }
+
         return response()->json([
             'status' => 'ok',
             'data' => $this->leagueHelper->getLeagueStandings( $leagueId )
